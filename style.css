@@ -1,0 +1,56 @@
+h2 {
+  margin-top: 0;
+}
+label {
+  display: inline-block;
+  font-style: italic;
+}
+svg g * {
+  transform-box: fill-box;
+  transform-origin: center;
+}
+.group {
+  display: inline-block;
+  vertical-align: top;
+  margin: 10px;
+}
+.control_row {
+  margin: 12px 0;
+  vertical-align: middle;
+}
+.control_label {
+  width: 190px;
+}
+.move_button {
+  width: 40px;
+  height: 40px;
+  font-family: "system-ui", "Segoe UI Adjusted", "Segoe UI", "Liberation Sans", sans-serif;
+}
+.matrix {
+  /* https://stackoverflow.com/a/11561235 */
+  display: inline-block;
+  position: relative;
+  vertical-align: middle;
+  padding: 1px 2px;
+  margin: 5px 0px;
+}
+.matrix:before, .matrix:after {
+  content: "";
+  position: absolute;
+  top: 1px;
+  border: 1px solid #000;
+  width: 6px;
+  bottom: 1px;
+}
+.matrix:before {
+  left: 0px;
+  border-right: 0px;
+}
+.matrix:after {
+  right: 0px;
+  border-left: 0px;
+}
+.matrix td {
+  padding: 5px;    
+  text-align: center;
+}

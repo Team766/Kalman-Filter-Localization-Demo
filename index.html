@@ -1,0 +1,170 @@
+<html>
+<head>
+<title>Kalman Filter Localization Demo</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<h1>Kalman Filter Localization Demo</h1>
+<div class="group" style="border: 1px solid black">
+  <svg width="500" height="500" viewBox="-10 -10 20 20">
+    <g transform="scale(1,-1)">
+      <rect id="robot" stroke="black" stroke-width="0.2" fill="none" />
+      <ellipse id="cov_est" stroke="blue" stroke-width="0.2" fill="none" />
+      <ellipse id="cov_landmark" stroke="green" stroke-width="0.2" fill="none" />
+    </g>
+  </svg>
+</div>
+<div class="group">
+  <h2>Move / Odometry Update</h2>
+  <div class="control_row">
+    <label class="control_label">Distance</label>
+    <input type="number" min="0" max="5" value="1" id="move_distance">
+  </div>
+  <div class="control_row">
+    <label class="control_label">Covariance<sub>per distance</sub></label>
+    <table class="matrix">
+      <tr>
+        <td>
+          <label>Along-track Variance</label><br>
+          <input type="number" min="0" max="1" value="0.02" step="0.01" id="move_var_track">
+        </td>
+        <td>0</td>
+      </tr>
+      <tr>
+        <td>0</td>
+        <td>
+          <label>Cross-track Variance</label><br>
+          <input type="number" min="0" max="1" value="0.005" step="0.005" id="move_var_cross">
+        </td>
+      </tr>
+    </table>
+  </div>
+  <div class="control_row">
+    <label class="control_label">Add error to movement</label>
+    <input type="checkbox" id="move_error">
+  </div>
+  <div class="control_row">
+    <label class="control_label">Move robot and update</label>
+    <table style="display: inline-block; vertical-align: middle">
+      <tr>
+        <td><button onclick="moveRobot([-1, 1])" class="move_button" title="Move Northeast">&#9720;</button></td>
+        <td><button onclick="moveRobot([0, 1])" class="move_button" title="Move North">&#9651;</button></td>
+        <td><button onclick="moveRobot([1, 1])" class="move_button" title="Move Northwest">&#9721;</button></td>
+      </tr>
+      <tr>
+        <td><button onclick="moveRobot([-1, 0])" class="move_button" title="Move West">&#9665;</button></td>
+        <td></td>
+        <td><button onclick="moveRobot([1, 0])" class="move_button" title="Move East">&#9655;</button></td>
+      </tr>
+      <tr>
+        <td><button onclick="moveRobot([-1, -1])" class="move_button" title="Move Southwest">&#9722;</button></td>
+        <td><button onclick="moveRobot([0, -1])" class="move_button" title="Move South">&#9661;</button></td>
+        <td><button onclick="moveRobot([1, -1])" class="move_button" title="Move Southeast">&#9727;</button></td>
+      </tr>
+    </table>
+  </div>
+  <h2>Landmark Update</h2>
+  <div class="control_row">
+    <label class="control_label">Covariance<sub>sensor</sub></label>
+    <table class="matrix">
+      <tr>
+        <td>
+          <label>X Variance</label><br>
+          <input type="number" min="0" max="5" value="0.2" step="0.05" id="landmark_var_x">
+        </td>
+        <td>
+          <label>XY Covariance</label><br>
+          <input type="number" min="0" max="5" value="0.0" step="0.05" id="landmark_cov_xy">
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <label>XY Covariance</label><br>
+          <output id="landmark_sym_cov_xy"></output>
+        </td>
+        <td>
+          <label>Y Variance</label><br>
+          <input type="number" min="0" max="5" value="0.2" step="0.05" id="landmark_var_y">
+        </td>
+      </tr>
+    </table>
+  </div>
+  <div class="control_row">
+    <label class="control_label">Add error to measurement</label>
+    <input type="checkbox" id="landmark_error">
+  </div>
+  <div class="control_row">
+    <label class="control_label">Update using sensor</label>
+    <button onclick="landmarkMeasure()">Measure</button>
+    <button onclick="landmarkUpdate()" id="landmark_update">Update</button>
+  </div>
+</div>
+<div class="group">
+  <h2>Result</h2>
+  <div class="control_row">
+    <label class="control_label">Reset position and estimate</label>
+    <button onclick="resetRobot()">Reset</button>
+  </div>
+  <div class="control_row">
+    <label class="control_label">Position<sub>actual</sub></label>
+    <table class="matrix">
+      <tr>
+        <td>
+          <label>X Position</label><br>
+          <output id="actual_pos_x"></output>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <label>Y Position</label><br>
+          <output id="actual_pos_y"></output>
+        </td>
+      </tr>
+    </table>
+  </div>
+  <div class="control_row">
+    <label class="control_label">Position<sub>estimate</sub></label>
+    <table class="matrix">
+      <tr>
+        <td>
+          <label>X Position</label><br>
+          <output id="est_pos_x"></output>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <label>Y Position</label><br>
+          <output id="est_pos_y"></output>
+        </td>
+      </tr>
+    </table>
+  </div>
+  <div class="control_row">
+    <label class="control_label">Covariance<sub>estimate</sub></label>
+    <table class="matrix">
+      <tr>
+        <td>
+          <label>X Variance</label><br>
+          <output id="est_pos_var_x"></output>
+        </td>
+        <td>
+          <label>XY Covariance</label><br>
+          <output id="est_pos_cov_xy"></output>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <label>XY Covariance</label><br>
+          <output id="est_pos_sym_cov_xy"></output>
+        </td>
+        <td>
+          <label>Y Variance</label><br>
+          <output id="est_pos_var_y"></output>
+        </td>
+      </tr>
+    </table>
+  </div>
+</div>
+<script src="script.js"></script>
+</body>
+</html>
