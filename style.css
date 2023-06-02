@@ -1,3 +1,6 @@
+p {
+  margin: 8px 0;
+}
 h2 {
   margin-top: 0;
 }
@@ -15,15 +18,21 @@ svg g * {
   margin: 10px;
 }
 .control_row {
-  margin: 12px 0;
+  margin: 8px 0;
   vertical-align: middle;
 }
 .control_label {
   width: 190px;
 }
+#landmark_update_help {
+  display: none;
+  width: 300px;
+  margin-left: 195px;
+  margin-top: 5px;
+}
 .move_button {
-  width: 40px;
-  height: 40px;
+  width: 36px;
+  height: 36px;
   font-family: "system-ui", "Segoe UI Adjusted", "Segoe UI", "Liberation Sans", sans-serif;
 }
 .matrix {
@@ -51,6 +60,6 @@ svg g * {
   border-left: 0px;
 }
 .matrix td {
-  padding: 5px;    
+  padding: 3px 5px;
   text-align: center;
 }

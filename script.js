@@ -174,6 +174,8 @@ const landmark_var_y = document.getElementById("landmark_var_y");
 const landmark_cov_xy = document.getElementById("landmark_cov_xy");
 const landmark_sym_cov_xy = document.getElementById("landmark_sym_cov_xy");
 const landmark_error = document.getElementById("landmark_error");
+const landmark_update = document.getElementById("landmark_update");
+const landmark_update_help = document.getElementById("landmark_update_help");
 const actual_pos_x = document.getElementById("actual_pos_x");
 const actual_pos_y = document.getElementById("actual_pos_y");
 const est_pos_x = document.getElementById("est_pos_x");
@@ -228,10 +230,12 @@ function displayUpdate() {
     setErrorEllipse(ellipse_cov_landmark, pos_landmark, cov_landmark);
 
     landmark_update.disabled = false;
+    landmark_update_help.style.display = "block";
   } else {
     ellipse_cov_landmark.style.display = "none";
     
     landmark_update.disabled = true;
+    landmark_update_help.style.display = "none";
   }
   
   setRobotRect(rect_robot, pos_actual);
